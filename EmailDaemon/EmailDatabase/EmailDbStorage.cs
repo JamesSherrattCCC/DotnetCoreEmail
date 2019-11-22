@@ -23,7 +23,7 @@ namespace EmailDaemon.EmailDatabase
 
         public async Task<IEnumerable<Email>> GetEmails()
         {
-            return await _dbContext.Emails.Where(email => email.User == _user).ToListAsync().ConfigureAwait(false);
+            return await _dbContext.Emails.Where(email => email.User == _user).ToListAsync();
         }
 
         public async Task<Email> GetLastRetrievedEmail()
@@ -34,11 +34,11 @@ namespace EmailDaemon.EmailDatabase
                         select new
                         {
                             MaxDate = Dateg.Max(email => email.DateRetrieved)
-                        }).FirstOrDefaultAsync().ConfigureAwait(false);
+                        }).FirstOrDefaultAsync();
 
             return await (from Mail in _dbContext.Set<Email>()
                                  where Mail.DateRetrieved == maxDate.MaxDate
-                                 select Mail).FirstOrDefaultAsync().ConfigureAwait(false);
+                                 select Mail).FirstOrDefaultAsync();
 
         }
 
@@ -52,7 +52,7 @@ namespace EmailDaemon.EmailDatabase
                     await _dbContext.Emails.AddAsync(email);
                 }
             }
-            await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

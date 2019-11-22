@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace EmailDaemon.EmailHandler
 {
-    interface IEmailRetriever
+    public interface IEmailRetriever
     {
 
         public Task<IEnumerable<Email>> GetAllEmails();

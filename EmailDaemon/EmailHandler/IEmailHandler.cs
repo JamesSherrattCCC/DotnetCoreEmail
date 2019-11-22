@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace EmailDaemon.EmailHandler
 {
-    interface IEmailHandler
+    public interface IEmailHandler
     {
 
         public Task InitialEmailsSyncAsync();

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EmailDaemon.DataTypes
 {
-    class Job
+    public class Job
     {
         [Key]
         public int Id { get; }

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace EmailDaemon.Config
 {
-    abstract class AConfig<T>
+    public abstract class AConfig<T>
     {
         public static T ReadFromJsonFile(string path)
         {

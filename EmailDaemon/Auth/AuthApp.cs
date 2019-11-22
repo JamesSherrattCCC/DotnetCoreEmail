@@ -8,21 +8,22 @@ using System.Threading.Tasks;
 
 namespace EmailDaemon.Auth
 {
-    class AuthApp : IAuthenticationProvider
+    public class AuthApp : IAuthenticationProvider
     {
-        private static IPublicClientApplication _msalClient;
-        private IAccount _userAccount = null;
+        protected static IPublicClientApplication _msalClient;
+        protected IAccount _userAccount = null;
+        protected static AuthConfig _config = AuthConfig.Config;
 
-        public static AuthConfig Config { get; } = AuthConfig.Config;
+        public static AuthConfig Config { get => _config; }
         public static IPublicClientApplication App { get; } = GetApp();
         public IAccount UserAccount { get { return _userAccount; } }
 
         public AuthApp()
         {
-            _ = GetAccessToken();
+            _ = GetAccessToken().Result;
         }
 
-        private static IPublicClientApplication GetApp()
+        protected static IPublicClientApplication GetApp()
         {
             var app =  PublicClientApplicationBuilder.Create(Config.ClientId)
                 .WithRedirectUri("http://localhost")

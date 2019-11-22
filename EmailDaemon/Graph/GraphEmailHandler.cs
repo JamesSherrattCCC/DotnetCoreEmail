@@ -23,7 +23,7 @@ namespace EmailDaemon.Graph
         public async Task<IEnumerable<Email>> GetAllEmails()
         {
             _nextEmailPageRequest = DeltaRequest();
-            return await GetEmailsAsync().ConfigureAwait(false);
+            return await GetEmailsAsync();
         }
 
         public async Task<IEnumerable<Email>> GetEmailsFromDate(DateTimeOffset date)
@@ -33,14 +33,14 @@ namespace EmailDaemon.Graph
                     .Request()
                     .Select("sender,subject,receivedDateTime,body")
                     .Filter($"ReceivedDateTime gt {date.UtcDateTime.ToString("O")}");
-            return await GetEmailsAsync().ConfigureAwait(false);
+            return await GetEmailsAsync();
         }
 
         public async Task<IEnumerable<Email>> GetLatestEmails()
         {
             _nextEmailPageRequest = DeltaRequest();
             _nextEmailPageRequest.QueryOptions.Add(new QueryOption("$deltatoken", GetEmailDeltaToken()));
-            return await GetEmailsAsync().ConfigureAwait(false);
+            return await GetEmailsAsync();
         }
 
         private string GetEmailDeltaToken()
@@ -64,7 +64,7 @@ namespace EmailDaemon.Graph
 
         private async Task UpdatePages()
         {
-            _curEmailPage = await _nextEmailPageRequest.GetAsync().ConfigureAwait(false);
+            _curEmailPage = await _nextEmailPageRequest.GetAsync();
             _nextEmailPageRequest = _curEmailPage.NextPageRequest;
         }
 
@@ -77,7 +77,7 @@ namespace EmailDaemon.Graph
 
                 while (_nextEmailPageRequest != null)
                 {
-                    _curEmailPage = await _nextEmailPageRequest.GetAsync().ConfigureAwait(false);
+                    _curEmailPage = await _nextEmailPageRequest.GetAsync();
                     foreach (Email email in _curEmailPage.ToEmails())
                     {
                         emails.Add(email);

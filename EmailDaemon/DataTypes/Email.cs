@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EmailDaemon.DataTypes
 {
-    class Email
+    public class Email
     {
 
         [Required]

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace EmailDaemon.EmailHandler
 {
-    interface IEmailStorage
+    public interface IEmailStorage
     {        
         public Task SaveEmails(IEnumerable<Email> emails);
 

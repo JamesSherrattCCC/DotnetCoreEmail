@@ -23,7 +23,7 @@ namespace EmailDaemon.EmailHandler
 
         public async Task<IEnumerable<Email>> GetEmails()
         {
-            return await _emailStorage.GetEmails().ConfigureAwait(false);
+            return await _emailStorage.GetEmails();
         }
 
         public async Task InitialEmailsSyncAsync()
@@ -33,35 +33,35 @@ namespace EmailDaemon.EmailHandler
             if (_lastEmail != null)
             {
                 Console.WriteLine($"Getting emails from {_lastEmail.DateRetrieved.UtcDateTime.ToString("O")}");
-                emails = await _emailRetriever.GetEmailsFromDate(_lastEmail.DateRetrieved).ConfigureAwait(false);
+                emails = await _emailRetriever.GetEmailsFromDate(_lastEmail.DateRetrieved);
             }
             else
             {
-                emails = await _emailRetriever.GetAllEmails().ConfigureAwait(false);
+                emails = await _emailRetriever.GetAllEmails();
             }
 
             if (emails != null)
-                await _emailStorage.SaveEmails(emails).ConfigureAwait(false);
+                await _emailStorage.SaveEmails(emails);
             else
                 Console.WriteLine("Error retrieving emails.");
         }
 
         public async Task SyncEmailsAsync()
         {
-            IEnumerable<Email> emails = await _emailRetriever.GetLatestEmails().ConfigureAwait(false);
+            IEnumerable<Email> emails = await _emailRetriever.GetLatestEmails();
 
             if (emails != null)
-                await _emailStorage.SaveEmails(emails).ConfigureAwait(false);
+                await _emailStorage.SaveEmails(emails);
             else
                 Console.WriteLine("Error retrieving emails.");
         }
 
         public async Task SyncEmailsWithCheckAsync()
         {
-            IEnumerable<Email> emails = await _emailRetriever.GetLatestEmails().ConfigureAwait(false);
+            IEnumerable<Email> emails = await _emailRetriever.GetLatestEmails();
 
             if (emails != null)
-                await _emailStorage.SaveEmails(emails).ConfigureAwait(false);
+                await _emailStorage.SaveEmails(emails);
             else
                 Console.WriteLine("Error retrieving emails.");
         }
