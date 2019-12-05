@@ -31,7 +31,7 @@ namespace EmailDaemon.Graph
             _nextEmailPageRequest = _graphClient.Me.MailFolders.Inbox.Messages
                     .Delta()
                     .Request()
-                    .Select("sender,subject,receivedDateTime,body")
+                    .Select("sender,subject,receivedDateTime,body,isread")
                     .Filter($"ReceivedDateTime gt {date.UtcDateTime.ToString("O")}");
             return await GetEmailsAsync();
         }
@@ -58,7 +58,7 @@ namespace EmailDaemon.Graph
             return _graphClient.Me.MailFolders.Inbox.Messages
                     .Delta()
                     .Request()
-                    .Select("sender,subject,receivedDateTime,body")
+                    .Select("sender,subject,receivedDateTime,body,isread")
                     .Filter("ReceivedDateTime ge 2019-01-01");
         }
 
@@ -73,19 +73,18 @@ namespace EmailDaemon.Graph
             try
             {
                 await UpdatePages();
-                IList<Email> emails = _curEmailPage.CurrentPage.ToEmails();
+                IList<Email> emails = new List<Email>();
+                ProcessMessages(ref emails);
 
                 while (_nextEmailPageRequest != null)
                 {
                     _curEmailPage = await _nextEmailPageRequest.GetAsync();
-                    foreach (Email email in _curEmailPage.ToEmails())
-                    {
-                        emails.Add(email);
-                    }
+                    ProcessMessages(ref emails);
                     _nextEmailPageRequest = _curEmailPage.NextPageRequest;
                 }
                 return emails;
             }
+
             catch (ServiceException ex)
             {
                 Console.WriteLine("Error getting emails:");
@@ -94,5 +93,25 @@ namespace EmailDaemon.Graph
             }
         }
 
+        private void ProcessMessages(ref IList<Email> emails)
+        {
+            foreach (Message message in _curEmailPage)
+            {
+                if (message.IsRead == false)
+                {
+                    MarkAsRead(message);
+                    emails.Add(message.ToEmail());
+                }
+            }
+        }
+
+        private async Task MarkAsRead(Message msg)
+        {
+            var messageUpdate = new Message
+            {
+                IsRead = true
+            };
+            await _graphClient.Me.Messages[msg.Id].Request().Select("IsRead").UpdateAsync(messageUpdate);
+        }
     }
 }

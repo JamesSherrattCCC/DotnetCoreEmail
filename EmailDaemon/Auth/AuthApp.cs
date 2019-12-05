@@ -11,17 +11,16 @@ namespace EmailDaemon.Auth
     public class AuthApp : IAuthenticationProvider
     {
         protected static IPublicClientApplication _msalClient;
-        protected IAccount _userAccount = null;
+        protected IAccount _userAccount;
         protected static AuthConfig _config = AuthConfig.Config;
 
         public static AuthConfig Config { get => _config; }
         public static IPublicClientApplication App { get; } = GetApp();
-        public IAccount UserAccount { get { return _userAccount; } }
-
-        public AuthApp()
-        {
-            _ = GetAccessToken().Result;
-        }
+        public IAccount UserAccount { get { 
+                if (_userAccount == null)
+                    _ = GetAccessToken().Result;
+                return _userAccount;
+            } }
 
         protected static IPublicClientApplication GetApp()
         {
@@ -50,11 +49,13 @@ namespace EmailDaemon.Auth
                     {
                         // Signin using the ui required.
                         result = await App.AcquireTokenInteractive(AuthConfig.Config.Scopes).ExecuteAsync();
+                        _userAccount = result.Account;
                     }
                 }
                 else
                 {
                     result = await App.AcquireTokenInteractive(AuthConfig.Config.Scopes).ExecuteAsync();
+                    _userAccount = result.Account;
                 }
                 return result.AccessToken;
 
