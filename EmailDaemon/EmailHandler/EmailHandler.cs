@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using EmailDaemon.DataTypes;
+using EmailDaemon.Models;
 
 namespace EmailDaemon.EmailHandler
 {
+    /// <summary>
+    /// Class which syncs, loads and saves emails.
+    /// </summary>
     class EmailHandler : IEmailHandler
     {
 
@@ -13,6 +16,11 @@ namespace EmailDaemon.EmailHandler
         private IEmailStorage _emailStorage;
         private Email _lastEmail;
 
+        /// <summary>
+        /// Create the email handler.
+        /// </summary>
+        /// <param name="retriever">Email retrieving object.</param>
+        /// <param name="storage">Email storage object.</param>
         public EmailHandler(IEmailRetriever retriever, IEmailStorage storage)
         {
             _emailRetriever = retriever;
@@ -21,11 +29,19 @@ namespace EmailDaemon.EmailHandler
 
         }
 
+        /// <summary>
+        /// Get emails from the email server.
+        /// </summary>
+        /// <returns>IEnumerable containing emails.</returns>
         public async Task<IEnumerable<Email>> GetEmails()
         {
             return await _emailStorage.GetEmails();
         }
 
+        /// <summary>
+        /// Initial syncing of emails in the database.
+        /// </summary>
+        /// <returns>Task which syncs the emails.</returns>
         public async Task InitialEmailsSyncAsync()
         {
             IEnumerable<Email> emails;
@@ -46,6 +62,10 @@ namespace EmailDaemon.EmailHandler
                 Console.WriteLine("Error retrieving emails.");
         }
 
+        /// <summary>
+        /// Sync the database with the email server.
+        /// </summary>
+        /// <returns>Task which syncs emails.</returns>
         public async Task SyncEmailsAsync()
         {
             IEnumerable<Email> emails = await _emailRetriever.GetLatestEmails();
@@ -56,6 +76,11 @@ namespace EmailDaemon.EmailHandler
                 Console.WriteLine("Error retrieving emails.");
         }
 
+        /// <summary>
+        /// Check emails are not already in the database before adding them to the database.
+        /// TODO: this is now no longer needed as the DBO checks this.
+        /// </summary>
+        /// <returns>Task which syncs the emails.</returns>
         public async Task SyncEmailsWithCheckAsync()
         {
             IEnumerable<Email> emails = await _emailRetriever.GetLatestEmails();

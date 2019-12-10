@@ -1,4 +1,4 @@
-﻿using EmailDaemon.DataTypes;
+﻿using EmailDaemon.Models;
 using EmailDaemon.EmailHandler;
 using Microsoft.Graph;
 using System;
@@ -8,6 +8,10 @@ using System.Web;
 
 namespace EmailDaemon.Graph
 {
+    /// <summary>
+    /// Class for retrieving emails from Microsoft Graph. This uses email
+    /// deltas. See: https://docs.microsoft.com/en-us/graph/api/message-delta?view=graph-rest-1.0&tabs=http
+    /// </summary>
     class GraphEmailHandler : IEmailRetriever
     {
         private GraphServiceClient _graphClient;
@@ -15,17 +19,31 @@ namespace EmailDaemon.Graph
         private IMessageDeltaCollectionPage _curEmailPage;
         private IMessageDeltaRequest _nextEmailPageRequest;
 
+        /// <summary>
+        /// Create a MS Graph email handler when provided with an authorisation class
+        /// (such as MSAL).
+        /// </summary>
+        /// <param name="authProvider">Authorisation provider (provides tokens) for MS Graph.</param>
         public GraphEmailHandler(IAuthenticationProvider authProvider)
         {
             _graphClient = new GraphServiceClient(authProvider);
         }
 
+        /// <summary>
+        /// Get all the unread emails (since Jam 2019) and mark them as read.
+        /// </summary>
+        /// <returns>Task which contains list of unread emails. </returns>
         public async Task<IEnumerable<Email>> GetAllEmails()
         {
             _nextEmailPageRequest = DeltaRequest();
             return await GetEmailsAsync();
         }
 
+        /// <summary>
+        /// Get unread emails from a date.
+        /// </summary>
+        /// <param name="date">date to retrieve emails from.</param>
+        /// <returns>Task containing a list of emails from a date.</returns>
         public async Task<IEnumerable<Email>> GetEmailsFromDate(DateTimeOffset date)
         {
             _nextEmailPageRequest = _graphClient.Me.MailFolders.Inbox.Messages
@@ -36,6 +54,10 @@ namespace EmailDaemon.Graph
             return await GetEmailsAsync();
         }
 
+        /// <summary>
+        /// Get the latest emails. This uses the delta token obtained from the last batch.
+        /// </summary>
+        /// <returns>Task containing list of the latest emails.</returns>
         public async Task<IEnumerable<Email>> GetLatestEmails()
         {
             _nextEmailPageRequest = DeltaRequest();
@@ -43,6 +65,10 @@ namespace EmailDaemon.Graph
             return await GetEmailsAsync();
         }
 
+        /// <summary>
+        /// Get the delta token for retrieving the next emails from the last set.
+        /// </summary>
+        /// <returns>String containing the delta token.</returns>
         private string GetEmailDeltaToken()
         {
             object val;
@@ -53,6 +79,10 @@ namespace EmailDaemon.Graph
             return deltaToken;
         }
 
+        /// <summary>
+        /// Get the next set of emails, using a delta token.
+        /// </summary>
+        /// <returns>The delta request.</returns>
         private IMessageDeltaRequest DeltaRequest()
         {
             return _graphClient.Me.MailFolders.Inbox.Messages
@@ -62,12 +92,20 @@ namespace EmailDaemon.Graph
                     .Filter("ReceivedDateTime ge 2019-01-01");
         }
 
+        /// <summary>
+        /// Update to the next set of pages.
+        /// </summary>
+        /// <returns>Task containing the next set of pages.</returns>
         private async Task UpdatePages()
         {
             _curEmailPage = await _nextEmailPageRequest.GetAsync();
             _nextEmailPageRequest = _curEmailPage.NextPageRequest;
         }
 
+        /// <summary>
+        /// Get the next set of emails async.
+        /// </summary>
+        /// <returns>Task which returns all the pages for the next set of emails.</returns>
         private async Task<IEnumerable<Email>> GetEmailsAsync()
         {
             try
@@ -93,6 +131,11 @@ namespace EmailDaemon.Graph
             }
         }
 
+        /// <summary>
+        /// Process the set of retrieved messages.
+        /// For now, this just marks them as read.
+        /// </summary>
+        /// <param name="emails">list of emails to mark as read.</param>
         private void ProcessMessages(ref IList<Email> emails)
         {
             foreach (Message message in _curEmailPage)
@@ -105,6 +148,11 @@ namespace EmailDaemon.Graph
             }
         }
 
+        /// <summary>
+        /// Mark the supplied email as read.
+        /// </summary>
+        /// <param name="msg">Email message to mark as read.</param>
+        /// <returns>Task which marks the email as read.</returns>
         private async Task MarkAsRead(Message msg)
         {
             var messageUpdate = new Message

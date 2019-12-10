@@ -5,8 +5,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace EmailDaemon.DataTypes
+namespace EmailDaemon.Models
 {
+    /// <summary>
+    /// EFCore email model.
+    /// </summary>
     public class Email
     {
 

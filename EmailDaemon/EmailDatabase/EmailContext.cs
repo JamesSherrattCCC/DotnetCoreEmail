@@ -1,8 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using EmailDaemon.DataTypes;
+using EmailDaemon.Models;
 
 namespace EmailDaemon.EmailDatabase
 {
+    /// <summary>
+    /// Database context for the emails.
+    /// </summary>
     class EmailContext : DbContext
     {
         public DbSet<Email> Emails { get; set; }

@@ -4,6 +4,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EmailDaemon.Auth
 {
+    /// <summary>
+    /// Class containing the Azure authorisation configuration params.
+    /// </summary>
     public class AuthConfig : AConfig<AuthConfig>
     {
         [Required(AllowEmptyStrings = false)]

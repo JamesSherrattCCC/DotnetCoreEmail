@@ -1,9 +1,12 @@
-﻿using EmailDaemon.DataTypes;
+﻿using EmailDaemon.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EmailDaemon.EmailHandler
 {
+    /// <summary>
+    /// Interface for syncing emails.
+    /// </summary>
     public interface IEmailHandler
     {
 

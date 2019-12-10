@@ -4,8 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 
-namespace EmailDaemon.DataTypes
+namespace EmailDaemon.Models
 {
+    /// <summary>
+    /// EFCore Job model.
+    /// </summary>
     public class Job
     {
         [Key]
