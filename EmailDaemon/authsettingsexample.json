@@ -1,0 +1,9 @@
+{
+  "Instance": "https://login.microsoftonline.com/common/oauth2/nativeclient",
+  "Tenant": "common",
+  "ClientId": "someid",
+  "Scopes": [
+    "User.Read",
+    "Mail.ReadWrite"
+  ]
+}
